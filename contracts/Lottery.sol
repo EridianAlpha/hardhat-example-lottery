@@ -7,11 +7,7 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 import "hardhat/console.sol";
 
-error Lottery__UpkeepNotNeeded(
-    uint256 currentBalance,
-    uint256 numPlayers,
-    uint256 lotteryState
-);
+error Lottery__UpkeepNotNeeded(uint256 currentBalance, uint256 numPlayers, uint256 lotteryState);
 error Lottery__TransferFailed();
 error Lottery__SendMoreToEnterLottery();
 error Lottery__LotteryNotOpen();
@@ -40,7 +36,7 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     uint256 private immutable i_interval;
     uint256 private s_lastTimeStamp;
     address private s_recentWinner;
-    uint256 private i_entranceFee;
+    uint256 private immutable i_entranceFee;
     address payable[] private s_players;
     LotteryState private s_lotteryState;
 
@@ -68,18 +64,28 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         i_callbackGasLimit = callbackGasLimit;
     }
 
+    receive() external payable {
+        enterLottery();
+    }
+
+    fallback() external payable {
+        enterLottery();
+    }
+
     function enterLottery() public payable {
-        // require(msg.value >= i_entranceFee, "Not enough value sent");
-        // require(s_lotteryState == LotteryState.OPEN, "Lottery is not open");
         if (msg.value < i_entranceFee) {
             revert Lottery__SendMoreToEnterLottery();
         }
         if (s_lotteryState != LotteryState.OPEN) {
             revert Lottery__LotteryNotOpen();
         }
+
+        // msg.sender is not a payable address so needs to be type
+        // cast to payable to be added to the payable array s_players
         s_players.push(payable(msg.sender));
+
         // Emit an event when we update a dynamic array or mapping
-        // Named events with the function name reversed
+        // BEST PRACTICE: Name events with the function name reversed
         emit LotteryEnter(msg.sender);
     }
 
@@ -94,12 +100,7 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
      */
     function checkUpkeep(
         bytes memory /* checkData */
-    )
-        public
-        view
-        override
-        returns (bool upkeepNeeded, bytes memory /* performData */)
-    {
+    ) public view override returns (bool upkeepNeeded, bytes memory /* performData */) {
         bool isOpen = LotteryState.OPEN == s_lotteryState;
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = s_players.length > 0;
@@ -113,8 +114,9 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
      * and it kicks off a Chainlink VRF call to get a random winner.
      */
     function performUpkeep(bytes calldata /* performData */) external override {
+        // Stores the first return value in upkeepNeeded
+        // and the second return value is empty so doesn't need to be stored
         (bool upkeepNeeded, ) = checkUpkeep("");
-        // require(upkeepNeeded, "Upkeep not needed");
         if (!upkeepNeeded) {
             revert Lottery__UpkeepNotNeeded(
                 address(this).balance,
@@ -142,29 +144,20 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         uint256 /* requestId */,
         uint256[] memory randomWords
     ) internal override {
-        // s_players size 10
-        // randomNumber 202
-        // 202 % 10 ? what's doesn't divide evenly into 202?
-        // 20 * 10 = 200
-        // 2
-        // 202 % 10 = 2
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
         s_players = new address payable[](0);
         s_lotteryState = LotteryState.OPEN;
         s_lastTimeStamp = block.timestamp;
-        (bool success, ) = recentWinner.call{ value: address(this).balance }(
-            ""
-        );
-        // require(success, "Transfer failed");
+        (bool success, ) = recentWinner.call{ value: address(this).balance }("");
         if (!success) {
             revert Lottery__TransferFailed();
         }
         emit WinnerPicked(recentWinner);
     }
 
-    /** Getter Functions */
+    /** View / Pure (Getter) Functions */
 
     function getLotteryState() public view returns (LotteryState) {
         return s_lotteryState;
