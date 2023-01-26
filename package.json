@@ -42,6 +42,7 @@
     "deploy": "yarn hardhat deploy",
     "deploy:local": "yarn hardhat deploy --network localhost",
     "deploy:goerli": "yarn hardhat deploy --network goerli",
-    "slither": "slither contracts/ --solc-remaps '@openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink' --exclude naming-convention,external-function,low-level-calls"
+    "slither": "slither contracts/ --solc-remaps '@openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink' --exclude naming-convention,external-function,low-level-calls",
+    "typechain": "yarn hardhat typechain"
   }
 }
