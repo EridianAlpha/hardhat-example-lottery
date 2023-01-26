@@ -10,35 +10,28 @@ import verify from "../utils/verify"
 
 const FUND_AMOUNT = "1000000000000000000000"
 
-const deployLottery: DeployFunction = async function (
-    hre: HardhatRuntimeEnvironment
-) {
+const deployLottery: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
     const chainId = network.config.chainId
-    const vrfCoordinatorV2Mock = await ethers.getContract(
-        "VRFCoordinatorV2Mock"
-    )
+    const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
 
-    let vrfCoordinatorV2Address: string | undefined,
-        subscriptionId: string | undefined
+    let vrfCoordinatorV2Address: string | undefined
+    let subscriptionId: string | undefined
 
     if (chainId == 31337) {
         // create VRFV2 Subscription
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address
-        const transactionResponse =
-            await vrfCoordinatorV2Mock.createSubscription()
+        const transactionResponse = await vrfCoordinatorV2Mock.createSubscription()
         const transactionReceipt = await transactionResponse.wait()
         subscriptionId = transactionReceipt.events[0].args.subId
         // Fund the subscription
         // Our mock makes it so we don't actually have to worry about sending fund
         await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, FUND_AMOUNT)
     } else {
-        vrfCoordinatorV2Address =
-            networkConfig[network.config.chainId!]["vrfCoordinatorV2"]
-        subscriptionId =
-            networkConfig[network.config.chainId!]["subscriptionId"]
+        vrfCoordinatorV2Address = networkConfig[network.config.chainId!]["vrfCoordinatorV2"]
+        subscriptionId = networkConfig[network.config.chainId!]["subscriptionId"]
     }
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
@@ -66,10 +59,7 @@ const deployLottery: DeployFunction = async function (
     }
 
     // Verify the deployment
-    if (
-        !developmentChains.includes(network.name) &&
-        process.env.ETHERSCAN_API_KEY
-    ) {
+    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         log("Verifying...")
         await verify(lottery.address, args)
     }
