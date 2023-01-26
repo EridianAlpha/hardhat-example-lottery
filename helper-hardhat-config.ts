@@ -1,21 +1,46 @@
+import { ethers } from "hardhat"
+
 export interface networkConfigItem {
-    ethUsdPriceFeed?: string
-    blockConfirmations?: number
+    name?: string
+    subscriptionId?: string
+    gasLane?: string
+    keepersUpdateInterval?: string
+    lotteryEntranceFee?: string
+    callbackGasLimit?: string
+    vrfCoordinatorV2?: string
 }
 
 export interface networkConfigInfo {
-    [key: string]: networkConfigItem
+    [key: number]: networkConfigItem
 }
 
 export const networkConfig: networkConfigInfo = {
-    localhost: {},
-    hardhat: {},
-    goerli: {
-        ethUsdPriceFeed: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
-        blockConfirmations: 6,
+    31337: {
+        name: "localhost",
+        subscriptionId: "588",
+        gasLane:
+            "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
+        keepersUpdateInterval: "30",
+        lotteryEntranceFee: ethers.utils.parseEther("0.01").toString(), // 0.01 ETH
+        callbackGasLimit: "500000", // 500,000 gas
+    },
+    4: {
+        name: "goerli",
+        subscriptionId: "588",
+        gasLane:
+            "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
+        keepersUpdateInterval: "30",
+        lotteryEntranceFee: ethers.utils.parseEther("0.01").toString(), // 0.01 ETH
+        callbackGasLimit: "500000", // 500,000 gas
+        vrfCoordinatorV2: "0x6168499c0cFfCaCD319c818142124B7A15E857ab",
+    },
+    1: {
+        name: "mainnet",
+        keepersUpdateInterval: "30",
     },
 }
 
-export const DECIMALS = "8"
-export const INITIAL_ANSWER = "200000000000" // $2000
 export const developmentChains = ["hardhat", "localhost"]
+export const VERIFICATION_BLOCK_CONFIRMATIONS = 6
+export const frontEndContractsFile =
+    "../nextjs-smartcontract-lottery-fcc/constants/contractAddresses.json"
