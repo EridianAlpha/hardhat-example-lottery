@@ -1,0 +1,22 @@
+# Standard Ignore Files 
+node_modules
+.env
+
+# OSX Files
+.DS_Store
+
+# VSCode Files
+.vscode
+
+# Solidity Ignore Files
+.encryptedKey.json
+coverage
+coverage.json
+typechain
+
+# Hardhat Files
+cache
+artifacts
+gas-report.txt
+typechain-types
+deployments
