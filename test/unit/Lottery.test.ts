@@ -3,7 +3,7 @@ import { assert, expect } from "chai"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 import { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types"
 import { developmentChains, networkConfig } from "../../helper-hardhat-config"
-import { network, deployments, ethers, getNamedAccounts } from "hardhat"
+import { network, deployments, ethers } from "hardhat"
 
 !developmentChains.includes(network.name)
     ? describe.skip
