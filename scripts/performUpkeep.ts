@@ -1,13 +1,12 @@
 import { ethers } from "hardhat"
 
-async function enterLottery() {
+async function performUpkeep() {
     const lottery = await ethers.getContract("Lottery")
-    const entranceFee = await lottery.getEntranceFee()
-    await lottery.enterLottery({ value: entranceFee })
-    console.log("Entered!")
+    await lottery.performUpkeep([])
+    console.log("Update Triggered!")
 }
 
-enterLottery()
+performUpkeep()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error)

@@ -14,13 +14,13 @@ const deployLottery: DeployFunction = async function (hre: HardhatRuntimeEnviron
     const { deployments, getNamedAccounts, network, ethers } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
-    const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
 
     let vrfCoordinatorV2Address: string | undefined
     let subscriptionId: string | undefined
 
     if (developmentChains.includes(network.name)) {
         // Create VRFV2 Subscription
+        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address
         const transactionResponse = await vrfCoordinatorV2Mock.createSubscription()
         const transactionReceipt = await transactionResponse.wait(1)
@@ -54,6 +54,7 @@ const deployLottery: DeployFunction = async function (hre: HardhatRuntimeEnviron
 
     // For development chains a consumer must be added to the VRF Coordinator
     if (developmentChains.includes(network.name)) {
+        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
         await vrfCoordinatorV2Mock.addConsumer(subscriptionId, lottery.address)
     }
 

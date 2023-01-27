@@ -117,6 +117,7 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // Stores the first return value in upkeepNeeded
         // and the second return value is empty so doesn't need to be stored
         (bool upkeepNeeded, ) = checkUpkeep("");
+
         if (!upkeepNeeded) {
             revert Lottery__UpkeepNotNeeded(
                 address(this).balance,
@@ -194,5 +195,9 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     function getNumberOfPlayers() public view returns (uint256) {
         return s_players.length;
+    }
+
+    function getCurrentTimestamp() public view returns (uint256) {
+        return block.timestamp;
     }
 }
