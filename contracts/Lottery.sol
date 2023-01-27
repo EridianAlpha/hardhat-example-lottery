@@ -132,7 +132,8 @@ contract Lottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
             i_callbackGasLimit,
             NUM_WORDS
         );
-        // Quiz... is this redundant?
+        // The VRFCoordinator emits a RandomWordsRequested event so this isn't actually needed
+        // but is left here to simplify this example contract showing events
         emit RequestedLotteryWinner(requestId);
     }
 

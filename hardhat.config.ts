@@ -61,6 +61,9 @@ const config: HardhatUserConfig = {
             default: 1, // here this will by default take the second account as player
         },
     },
+    mocha: {
+        timeout: 200000, // 200 seconds max
+    },
 }
 
 export default config

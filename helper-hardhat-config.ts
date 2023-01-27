@@ -17,20 +17,20 @@ export interface networkConfigInfo {
 export const networkConfig: networkConfigInfo = {
     31337: {
         name: "localhost",
-        subscriptionId: "588",
-        gasLane: "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
+        subscriptionId: "0",
+        gasLane: "0x0000000000000000000000000000000000000000000000000000000000000000", // 150 gwei
         keepersUpdateInterval: "30",
-        lotteryEntranceFee: ethers.utils.parseEther("0.01").toString(), // 0.01 ETH
+        lotteryEntranceFee: ethers.utils.parseEther("0.001").toString(),
         callbackGasLimit: "500000", // 500,000 gas
     },
-    4: {
+    5: {
         name: "goerli",
-        subscriptionId: "588",
-        gasLane: "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
+        subscriptionId: "9178",
+        gasLane: "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15", // 150 gwei
         keepersUpdateInterval: "30",
-        lotteryEntranceFee: ethers.utils.parseEther("0.01").toString(), // 0.01 ETH
+        lotteryEntranceFee: ethers.utils.parseEther("0.001").toString(), // 0.01 ETH
         callbackGasLimit: "500000", // 500,000 gas
-        vrfCoordinatorV2: "0x6168499c0cFfCaCD319c818142124B7A15E857ab", // Goerli VRF Coordinator
+        vrfCoordinatorV2: "0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D", // Goerli VRF Coordinator
     },
     1: {
         name: "mainnet",
